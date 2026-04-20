@@ -66,11 +66,11 @@ struct ClickWheel: View {
                     .position(x: side / 2, y: side / 2 - labelOffset)
                     .onTapGesture { flash(.menu) }
 
-                WheelGlyph(system: "backward.end.fill", color: glyphColor(for: .prev))
+                WheelGlyph(system: "backward.end.alt.fill", color: glyphColor(for: .prev))
                     .position(x: side / 2 - labelOffset, y: side / 2)
                     .onTapGesture { flash(.prev) }
 
-                WheelGlyph(system: "forward.end.fill", color: glyphColor(for: .next))
+                WheelGlyph(system: "forward.end.alt.fill", color: glyphColor(for: .next))
                     .position(x: side / 2 + labelOffset, y: side / 2)
                     .onTapGesture { flash(.next) }
 
