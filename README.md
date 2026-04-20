@@ -2,7 +2,7 @@
 
 A tiny iPod Nano (technically Nano 1) on your Mac that controls whatever's playing.
 
-![MacPod](macpod.png)
+<img width="680" height="1100" alt="macpod" src="https://github.com/user-attachments/assets/2a779a6f-9164-4e66-bc6b-d219a862f1da" />
 
 It looks like a first-gen iPod Nano and behaves like one. The clickwheel does what you'd expect — play, pause, skip. It shows the track, artist, album, artwork, and a proper blue-striped progress bar. It works with Apple Music, Spotify, YouTube, browsers, podcast apps — basically anything the Mac's system "Now Playing" knows about.
 
