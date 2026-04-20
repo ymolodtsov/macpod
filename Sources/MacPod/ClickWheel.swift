@@ -10,6 +10,20 @@ struct ClickWheel: View {
     let theme: NanoTheme
     var onPress: (WheelButton) -> Void
 
+    @State private var pressed: WheelButton?
+
+    private func glyphColor(for button: WheelButton) -> Color {
+        pressed == button ? Color.white.opacity(0.45) : theme.wheelGlyph
+    }
+
+    private func flash(_ button: WheelButton) {
+        pressed = button
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+            if pressed == button { pressed = nil }
+        }
+        onPress(button)
+    }
+
     var body: some View {
         GeometryReader { geo in
             let side = min(geo.size.width, geo.size.height)
@@ -48,21 +62,21 @@ struct ClickWheel: View {
 
                 let labelOffset = (ringOuter + ringInner) / 4
 
-                WheelLabel(text: "MENU", color: theme.wheelGlyph)
+                WheelLabel(text: "MENU", color: glyphColor(for: .menu))
                     .position(x: side / 2, y: side / 2 - labelOffset)
-                    .onTapGesture { onPress(.menu) }
+                    .onTapGesture { flash(.menu) }
 
-                WheelGlyph(system: "backward.end.fill", color: theme.wheelGlyph)
+                WheelGlyph(system: "backward.end.fill", color: glyphColor(for: .prev))
                     .position(x: side / 2 - labelOffset, y: side / 2)
-                    .onTapGesture { onPress(.prev) }
+                    .onTapGesture { flash(.prev) }
 
-                WheelGlyph(system: "forward.end.fill", color: theme.wheelGlyph)
+                WheelGlyph(system: "forward.end.fill", color: glyphColor(for: .next))
                     .position(x: side / 2 + labelOffset, y: side / 2)
-                    .onTapGesture { onPress(.next) }
+                    .onTapGesture { flash(.next) }
 
-                WheelGlyph(system: "playpause.fill", color: theme.wheelGlyph)
+                WheelGlyph(system: "playpause.fill", color: glyphColor(for: .playPause))
                     .position(x: side / 2, y: side / 2 + labelOffset)
-                    .onTapGesture { onPress(.playPause) }
+                    .onTapGesture { flash(.playPause) }
 
                 // Center select
                 Button(action: { onPress(.center) }) {
