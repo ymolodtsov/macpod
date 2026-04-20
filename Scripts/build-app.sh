@@ -33,8 +33,8 @@ cat > "${APP_DIR}/Contents/Info.plist" <<PLIST
     <key>CFBundleDisplayName</key><string>MacPod</string>
     <key>CFBundleExecutable</key><string>MacPod</string>
     <key>CFBundleIdentifier</key><string>dev.yury.macpod</string>
-    <key>CFBundleVersion</key><string>3</string>
-    <key>CFBundleShortVersionString</key><string>0.3</string>
+    <key>CFBundleVersion</key><string>4</string>
+    <key>CFBundleShortVersionString</key><string>0.4</string>
     <key>CFBundlePackageType</key><string>APPL</string>
     <key>LSMinimumSystemVersion</key><string>13.0</string>
     <key>LSUIElement</key><true/>

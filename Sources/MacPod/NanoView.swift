@@ -65,14 +65,17 @@ struct NanoView: View {
                                 RoundedRectangle(cornerRadius: 2)
                                     .strokeBorder(Color.black.opacity(0.12), lineWidth: 0.5)
                             )
-                        VStack(alignment: .leading, spacing: 1) {
+                        VStack(alignment: .leading, spacing: 0) {
                             Text(service.state.title ?? "")
                                 .lineLimit(1)
+                            Spacer(minLength: 0)
                             Text(service.state.artist ?? "")
                                 .lineLimit(1)
+                            Spacer(minLength: 0)
                             Text(service.state.album ?? "")
                                 .lineLimit(1)
                         }
+                        .frame(height: 52, alignment: .leading)
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundColor(.black)
                         Spacer(minLength: 0)

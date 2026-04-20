@@ -88,36 +88,55 @@ struct SettingsView: View {
     @ObservedObject var settings: AppSettings
 
     var body: some View {
-        Form {
-            Picker("Color", selection: Binding(
-                get: { settings.colorMode },
-                set: { settings.colorMode = $0 }
-            )) {
-                ForEach(ColorMode.allCases) { mode in
-                    Text(mode.displayName).tag(mode)
+        VStack(spacing: 0) {
+            Form {
+                Section {
+                    Picker("Color", selection: Binding(
+                        get: { settings.colorMode },
+                        set: { settings.colorMode = $0 }
+                    )) {
+                        ForEach(ColorMode.allCases) { mode in
+                            Text(mode.displayName).tag(mode)
+                        }
+                    }
+                    Picker("Window", selection: Binding(
+                        get: { settings.windowMode },
+                        set: { settings.windowMode = $0 }
+                    )) {
+                        ForEach(WindowMode.allCases) { mode in
+                            Text(mode.displayName).tag(mode)
+                        }
+                    }
+                }
+
+                Section {
+                    Button {
+                        if let url = URL(string: "https://github.com/ymolodtsov/macpod") {
+                            NSWorkspace.shared.open(url)
+                        }
+                    } label: {
+                        Label("Get Updates", systemImage: "arrow.down.circle")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
-            .pickerStyle(.inline)
+            .formStyle(.grouped)
 
-            Picker("Mode", selection: Binding(
-                get: { settings.windowMode },
-                set: { settings.windowMode = $0 }
-            )) {
-                ForEach(WindowMode.allCases) { mode in
-                    Text(mode.displayName).tag(mode)
-                }
-            }
-            .pickerStyle(.inline)
+            Divider()
 
-            Section {
+            HStack {
+                Spacer()
                 Button("Quit MacPod") {
                     NSApp.terminate(nil)
                 }
                 .keyboardShortcut("q", modifiers: .command)
+                .controlSize(.large)
+                .buttonStyle(.borderedProminent)
             }
+            .padding(16)
         }
-        .formStyle(.grouped)
-        .frame(width: 320, height: 320)
+        .frame(width: 340, height: 300)
     }
 }
 

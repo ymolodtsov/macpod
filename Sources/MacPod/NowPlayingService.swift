@@ -146,12 +146,20 @@ final class NowPlayingService: ObservableObject {
 
         // Carry forward existing state and patch in anything the event has.
         var np = state
+        let oldTitle = np.title
         if let title = payload["title"] as? String { np.title = title }
         if let artist = payload["artist"] as? String { np.artist = artist }
         if let album = payload["album"] as? String { np.album = album }
         if let duration = payload["duration"] as? Double { np.duration = duration }
         if let bid = payload["bundleIdentifier"] as? String { np.bundleIdentifier = bid }
-        if let tn = payload["trackNumber"] as? Int { np.trackNumber = tn }
+        // On track change, reset trackNumber to whatever the event carries
+        // (may be nil — many tracks from browsers/podcasts have no number).
+        // Otherwise carry forward unless the event explicitly updates it.
+        if np.title != oldTitle {
+            np.trackNumber = payload["trackNumber"] as? Int
+        } else if let tn = payload["trackNumber"] as? Int {
+            np.trackNumber = tn
+        }
         if let rate = reportedRate { np.isPlaying = rate > 0.001 }
         if let b64 = payload["artworkData"] as? String,
            let data = Data(base64Encoded: b64, options: .ignoreUnknownCharacters),
