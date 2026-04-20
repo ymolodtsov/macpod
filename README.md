@@ -1,6 +1,6 @@
 # MacPod
 
-A tiny iPod Nano on your Mac that controls whatever's playing.
+A tiny iPod Nano (technically Nano 1) on your Mac that controls whatever's playing.
 
 ![MacPod](macpod.png)
 
@@ -9,10 +9,9 @@ It looks like a first-gen iPod Nano and behaves like one. The clickwheel does wh
 ## Features
 
 - **Floating or Window mode** — keep it hovering always-on-top, or drop it into a Mission Control space as a regular window.
-- **Light or dark shell** — follows your system appearance, or pick white / black manually.
+- **Light or dark shell** — it can show either a white or a black iPod, following your system dark mode. 
 - **Menu bar icon** — click it for show/hide, transport, settings, quit.
 - **Battery indicator** — the little icon in the screen header reflects your actual Mac battery.
-- **Rock-solid time display** — no jumping or rewinding when you pause or skip.
 
 ## Install
 
