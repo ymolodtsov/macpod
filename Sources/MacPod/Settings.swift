@@ -65,8 +65,8 @@ struct NanoTheme {
     )
 
     static let black = NanoTheme(
-        body: Color(white: 0.08),
-        bodyStroke: Color.black.opacity(0.70),
+        body: Color(white: 0.03),
+        bodyStroke: Color.white.opacity(0.06),
         wheelRingTop: Color(white: 0.22),
         wheelRingBottom: Color(white: 0.13),
         wheelOutline: Color.white.opacity(0.06),
