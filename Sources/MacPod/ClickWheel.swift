@@ -10,19 +10,7 @@ struct ClickWheel: View {
     let theme: NanoTheme
     var onPress: (WheelButton) -> Void
 
-    @State private var pressed: WheelButton?
-
-    private func glyphColor(for button: WheelButton) -> Color {
-        pressed == button ? Color.white.opacity(0.45) : theme.wheelGlyph
-    }
-
-    private func flash(_ button: WheelButton) {
-        pressed = button
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
-            if pressed == button { pressed = nil }
-        }
-        onPress(button)
-    }
+    private var pressedColor: Color { Color.white.opacity(0.45) }
 
     var body: some View {
         GeometryReader { geo in
@@ -62,21 +50,25 @@ struct ClickWheel: View {
 
                 let labelOffset = (ringOuter + ringInner) / 4
 
-                WheelLabel(text: "MENU", color: glyphColor(for: .menu))
-                    .position(x: side / 2, y: side / 2 - labelOffset)
-                    .onTapGesture { flash(.menu) }
+                WheelLabel(text: "MENU", normal: theme.wheelGlyph, pressed: pressedColor) {
+                    onPress(.menu)
+                }
+                .position(x: side / 2, y: side / 2 - labelOffset)
 
-                WheelGlyph(system: "backward.end.alt.fill", color: glyphColor(for: .prev))
-                    .position(x: side / 2 - labelOffset, y: side / 2)
-                    .onTapGesture { flash(.prev) }
+                WheelGlyph(system: "backward.end.alt.fill", normal: theme.wheelGlyph, pressed: pressedColor) {
+                    onPress(.prev)
+                }
+                .position(x: side / 2 - labelOffset, y: side / 2)
 
-                WheelGlyph(system: "forward.end.alt.fill", color: glyphColor(for: .next))
-                    .position(x: side / 2 + labelOffset, y: side / 2)
-                    .onTapGesture { flash(.next) }
+                WheelGlyph(system: "forward.end.alt.fill", normal: theme.wheelGlyph, pressed: pressedColor) {
+                    onPress(.next)
+                }
+                .position(x: side / 2 + labelOffset, y: side / 2)
 
-                WheelGlyph(system: "playpause.fill", color: glyphColor(for: .playPause))
-                    .position(x: side / 2, y: side / 2 + labelOffset)
-                    .onTapGesture { flash(.playPause) }
+                WheelGlyph(system: "playpause.fill", normal: theme.wheelGlyph, pressed: pressedColor) {
+                    onPress(.playPause)
+                }
+                .position(x: side / 2, y: side / 2 + labelOffset)
 
                 // Center select
                 Button(action: { onPress(.center) }) {
@@ -97,25 +89,42 @@ struct ClickWheel: View {
 
 private struct WheelLabel: View {
     let text: String
-    let color: Color
+    let normal: Color
+    let pressed: Color
+    let action: () -> Void
     var body: some View {
-        Text(text)
-            .font(.system(size: 9.5, weight: .semibold))
-            .tracking(0.8)
-            .foregroundColor(color)
-            .frame(width: 46, height: 22)
-            .contentShape(Rectangle())
+        Button(action: action) {
+            Text(text)
+                .font(.system(size: 9.5, weight: .semibold))
+                .tracking(0.8)
+                .frame(width: 46, height: 22)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(WheelPressStyle(normal: normal, pressed: pressed))
     }
 }
 
 private struct WheelGlyph: View {
     let system: String
-    let color: Color
+    let normal: Color
+    let pressed: Color
+    let action: () -> Void
     var body: some View {
-        Image(systemName: system)
-            .font(.system(size: 11, weight: .semibold))
-            .foregroundColor(color)
-            .frame(width: 28, height: 22)
-            .contentShape(Rectangle())
+        Button(action: action) {
+            Image(systemName: system)
+                .font(.system(size: 11, weight: .semibold))
+                .frame(width: 28, height: 22)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(WheelPressStyle(normal: normal, pressed: pressed))
+    }
+}
+
+private struct WheelPressStyle: ButtonStyle {
+    let normal: Color
+    let pressed: Color
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .foregroundStyle(configuration.isPressed ? pressed : normal)
     }
 }
