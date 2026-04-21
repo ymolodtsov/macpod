@@ -52,11 +52,10 @@ struct NanoView: View {
             ZStack {
                 Color.white
                 VStack(alignment: .leading, spacing: 4) {
-                    if let tn = service.state.trackNumber {
-                        Text("Track \(tn)")
-                            .font(.system(size: 10, weight: .bold))
-                            .foregroundColor(.black)
-                    }
+                    Text(service.state.trackNumber.map { "Track \($0)" } ?? "Track")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(.black)
+                        .opacity(service.state.trackNumber == nil ? 0 : 1)
                     HStack(alignment: .top, spacing: 6) {
                         artworkView
                             .frame(width: 52, height: 52)
