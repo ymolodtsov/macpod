@@ -138,66 +138,37 @@ func render(px: Int) -> CGImage {
         ctx.fill(r)
     }
 
-    // Helper: fill a path.
-    func fill(_ path: CGPath) {
-        ctx.addPath(path)
-        ctx.setFillColor(white)
-        ctx.fillPath()
+    // Draw an SF Symbol centered at `center`, rendered white, fitting `box`.
+    // Uses NSImage(systemSymbolName:) so glyphs match what ClickWheel.swift
+    // uses — prev/next/playpause must look identical on icon and wheel.
+    func drawSymbol(_ name: String, at center: CGPoint, box: CGSize) {
+        let config = NSImage.SymbolConfiguration(pointSize: box.height, weight: .heavy)
+        guard let base = NSImage(systemSymbolName: name, accessibilityDescription: nil)?
+                .withSymbolConfiguration(config) else { return }
+        // Tint to white by drawing through a template.
+        let tinted = NSImage(size: base.size, flipped: false) { rect in
+            NSColor.white.set()
+            rect.fill()
+            base.draw(in: rect, from: .zero, operation: .destinationIn, fraction: 1.0)
+            return true
+        }
+        // Scale preserving aspect ratio to fit within `box`.
+        let srcAspect = base.size.width / max(base.size.height, 0.001)
+        var w = box.width
+        var h = box.height
+        if srcAspect > w / h { h = w / srcAspect } else { w = h * srcAspect }
+        let rect = CGRect(x: center.x - w/2, y: center.y - h/2, width: w, height: h)
+        var imgRect = CGRect(origin: .zero, size: tinted.size)
+        if let cg = tinted.cgImage(forProposedRect: &imgRect, context: nil, hints: nil) {
+            ctx.draw(cg, in: rect)
+        }
     }
 
-    // Triangle "prev"/"next" helpers — skip-to-end style (triangle + bar).
-    let glyphSize = s * 0.055
-    let barW = glyphSize * 0.22
-    let triW = glyphSize
-    let triH = glyphSize
-
-    // Prev (left): bar + leftward triangle.
-    do {
-        let center = CGPoint(x: cx - glyphR, y: cy)
-        let p = CGMutablePath()
-        // Left bar
-        p.addRect(CGRect(x: center.x - triW/2, y: center.y - triH/2, width: barW, height: triH))
-        // Triangle pointing left, starting right of the bar
-        let tx0 = center.x - triW/2 + barW + glyphSize * 0.05
-        p.move(to: CGPoint(x: tx0 + (triW - barW - glyphSize * 0.05), y: center.y + triH/2))
-        p.addLine(to: CGPoint(x: tx0 + (triW - barW - glyphSize * 0.05), y: center.y - triH/2))
-        p.addLine(to: CGPoint(x: tx0, y: center.y))
-        p.closeSubpath()
-        fill(p)
-    }
-
-    // Next (right): rightward triangle + bar.
-    do {
-        let center = CGPoint(x: cx + glyphR, y: cy)
-        let p = CGMutablePath()
-        let tx0 = center.x - triW/2
-        p.move(to: CGPoint(x: tx0, y: center.y + triH/2))
-        p.addLine(to: CGPoint(x: tx0, y: center.y - triH/2))
-        p.addLine(to: CGPoint(x: tx0 + triW - barW - glyphSize * 0.05, y: center.y))
-        p.closeSubpath()
-        // Right bar
-        p.addRect(CGRect(x: center.x + triW/2 - barW, y: center.y - triH/2, width: barW, height: triH))
-        fill(p)
-    }
-
-    // Play/pause (bottom): ▶ + ‖ combined like SF Symbol "playpause.fill".
-    do {
-        let center = CGPoint(x: cx, y: cy - glyphR)
-        let p = CGMutablePath()
-        // Triangle on the left
-        let triLeft = center.x - glyphSize * 0.95
-        p.move(to: CGPoint(x: triLeft, y: center.y + triH/2))
-        p.addLine(to: CGPoint(x: triLeft, y: center.y - triH/2))
-        p.addLine(to: CGPoint(x: triLeft + triW * 0.85, y: center.y))
-        p.closeSubpath()
-        // Two bars on the right
-        let barGap = glyphSize * 0.18
-        let pauseBarW = glyphSize * 0.22
-        let pauseX0 = center.x + glyphSize * 0.15
-        p.addRect(CGRect(x: pauseX0, y: center.y - triH/2, width: pauseBarW, height: triH))
-        p.addRect(CGRect(x: pauseX0 + pauseBarW + barGap, y: center.y - triH/2, width: pauseBarW, height: triH))
-        fill(p)
-    }
+    let glyphBox = CGSize(width: s * 0.095, height: s * 0.055)
+    drawSymbol("backward.end.alt.fill", at: CGPoint(x: cx - glyphR, y: cy), box: glyphBox)
+    drawSymbol("forward.end.alt.fill",  at: CGPoint(x: cx + glyphR, y: cy), box: glyphBox)
+    drawSymbol("playpause.fill",        at: CGPoint(x: cx, y: cy - glyphR), box: glyphBox)
+    _ = white
 
     return ctx.makeImage()!
 }
