@@ -30,13 +30,7 @@ struct NanoView: View {
             }
             .frame(width: NanoMetrics.bodyWidth, height: NanoMetrics.bodyHeight)
         }
-        // Keep the device flush with the window's top edge. The extra canvas
-        // is only needed beside and below it for the downward-cast shadows.
-        .frame(
-            width: NanoMetrics.windowWidth,
-            height: NanoMetrics.windowHeight,
-            alignment: .top
-        )
+        .frame(width: NanoMetrics.windowWidth, height: NanoMetrics.windowHeight)
     }
 
     private var bodyShape: some View {
@@ -289,5 +283,5 @@ enum NanoMetrics {
 
     static let shadowMargin: CGFloat = 100
     static var windowWidth: CGFloat { bodyWidth + shadowMargin * 2 }
-    static var windowHeight: CGFloat { bodyHeight + shadowMargin }
+    static var windowHeight: CGFloat { bodyHeight + shadowMargin * 2 }
 }
