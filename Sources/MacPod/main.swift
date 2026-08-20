@@ -28,9 +28,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         )
         let panel = NanoPanel(
             rootView: root,
+            size: CGSize(width: NanoMetrics.bodyWidth, height: NanoMetrics.bodyHeight),
+            mode: settings.windowMode
+        )
+        let shadowPanel = NanoShadowPanel(
+            rootView: NanoShadowView(settings: settings),
             size: CGSize(width: NanoMetrics.windowWidth, height: NanoMetrics.windowHeight),
             mode: settings.windowMode
         )
+        panel.attachShadowPanel(shadowPanel)
         panel.makeKeyAndOrderFront(nil)
         self.panel = panel
 

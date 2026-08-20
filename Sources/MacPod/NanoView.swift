@@ -14,9 +14,6 @@ struct NanoView: View {
     var body: some View {
         ZStack {
             bodyShape
-                .shadow(color: .black.opacity(0.22), radius: 48, x: 0, y: 28)
-                .shadow(color: .black.opacity(0.14), radius: 16, x: 0, y: 8)
-                .shadow(color: .black.opacity(0.08), radius: 2, x: 0, y: 1)
 
             VStack(spacing: 0) {
                 screen
@@ -30,7 +27,7 @@ struct NanoView: View {
             }
             .frame(width: NanoMetrics.bodyWidth, height: NanoMetrics.bodyHeight)
         }
-        .frame(width: NanoMetrics.windowWidth, height: NanoMetrics.windowHeight)
+        .frame(width: NanoMetrics.bodyWidth, height: NanoMetrics.bodyHeight)
     }
 
     private var bodyShape: some View {
@@ -269,6 +266,26 @@ struct NanoView: View {
         case .menu: onMenu()
         case .center: break
         }
+    }
+}
+
+struct NanoShadowView: View {
+    @ObservedObject var settings: AppSettings
+    @Environment(\.colorScheme) private var systemColorScheme
+
+    private var theme: NanoTheme {
+        NanoTheme.resolve(mode: settings.colorMode, systemIsDark: systemColorScheme == .dark)
+    }
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: NanoMetrics.bodyCorner, style: .continuous)
+            .fill(theme.body)
+            .frame(width: NanoMetrics.bodyWidth, height: NanoMetrics.bodyHeight)
+            .shadow(color: .black.opacity(0.22), radius: 48, x: 0, y: 28)
+            .shadow(color: .black.opacity(0.14), radius: 16, x: 0, y: 8)
+            .shadow(color: .black.opacity(0.08), radius: 2, x: 0, y: 1)
+            .frame(width: NanoMetrics.windowWidth, height: NanoMetrics.windowHeight)
+            .allowsHitTesting(false)
     }
 }
 
