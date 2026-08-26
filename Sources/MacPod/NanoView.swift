@@ -12,6 +12,10 @@ struct NanoView: View {
     }
 
     var body: some View {
+        draggableContent
+    }
+
+    private var draggableContent: some View {
         ZStack {
             bodyShape
 
@@ -28,6 +32,7 @@ struct NanoView: View {
             .frame(width: NanoMetrics.bodyWidth, height: NanoMetrics.bodyHeight)
         }
         .frame(width: NanoMetrics.bodyWidth, height: NanoMetrics.bodyHeight)
+        .modifier(WindowDragging())
     }
 
     private var bodyShape: some View {
@@ -269,6 +274,19 @@ struct NanoView: View {
     }
 }
 
+private struct WindowDragging: ViewModifier {
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(macOS 15.0, *) {
+            content
+                .gesture(WindowDragGesture())
+                .allowsWindowActivationEvents()
+        } else {
+            content
+        }
+    }
+}
+
 struct NanoShadowView: View {
     @ObservedObject var settings: AppSettings
     @Environment(\.colorScheme) private var systemColorScheme
@@ -278,14 +296,61 @@ struct NanoShadowView: View {
     }
 
     var body: some View {
-        RoundedRectangle(cornerRadius: NanoMetrics.bodyCorner, style: .continuous)
-            .fill(theme.body)
-            .frame(width: NanoMetrics.bodyWidth, height: NanoMetrics.bodyHeight)
-            .shadow(color: .black.opacity(0.22), radius: 48, x: 0, y: 28)
-            .shadow(color: .black.opacity(0.14), radius: 16, x: 0, y: 8)
-            .shadow(color: .black.opacity(0.08), radius: 2, x: 0, y: 1)
-            .frame(width: NanoMetrics.windowWidth, height: NanoMetrics.windowHeight)
-            .allowsHitTesting(false)
+        Canvas { context, _ in
+            let bodyRect = CGRect(
+                x: NanoMetrics.shadowMargin,
+                y: NanoMetrics.shadowMargin,
+                width: NanoMetrics.bodyWidth,
+                height: NanoMetrics.bodyHeight
+            )
+            let bodyPath = Path(
+                roundedRect: bodyRect,
+                cornerRadius: NanoMetrics.bodyCorner
+            )
+
+            drawShadow(
+                in: context,
+                path: bodyPath,
+                color: .black.opacity(0.22),
+                radius: 48,
+                y: 28
+            )
+            drawShadow(
+                in: context,
+                path: bodyPath,
+                color: .black.opacity(0.14),
+                radius: 16,
+                y: 8
+            )
+            drawShadow(
+                in: context,
+                path: bodyPath,
+                color: .black.opacity(0.08),
+                radius: 2,
+                y: 1
+            )
+        }
+        .frame(width: NanoMetrics.windowWidth, height: NanoMetrics.windowHeight)
+        .allowsHitTesting(false)
+    }
+
+    private func drawShadow(
+        in context: GraphicsContext,
+        path: Path,
+        color: Color,
+        radius: CGFloat,
+        y: CGFloat
+    ) {
+        var shadowContext = context
+        shadowContext.addFilter(
+            .shadow(
+                color: color,
+                radius: radius,
+                y: y,
+                options: [.shadowOnly]
+            )
+        )
+        shadowContext.fill(path, with: .color(theme.body))
     }
 }
 

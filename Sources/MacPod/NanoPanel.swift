@@ -10,7 +10,7 @@ final class NanoPanel: NSPanel {
     init<Content: View>(rootView: Content, size: CGSize, mode: WindowMode) {
         super.init(
             contentRect: NSRect(origin: .zero, size: size),
-            styleMask: [.borderless, .nonactivatingPanel, .fullSizeContentView],
+            styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
             defer: false
         )
@@ -29,6 +29,7 @@ final class NanoPanel: NSPanel {
         hosting.frame = NSRect(origin: .zero, size: size)
         hosting.autoresizingMask = [.width, .height]
         self.contentView = hosting
+        self.setContentSize(size)
 
         apply(mode: mode)
 
@@ -89,6 +90,7 @@ final class NanoShadowPanel: NSPanel {
         hosting.frame = NSRect(origin: .zero, size: size)
         hosting.autoresizingMask = [.width, .height]
         self.contentView = hosting
+        self.setContentSize(size)
 
         apply(mode: mode)
     }
