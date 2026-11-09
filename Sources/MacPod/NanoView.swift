@@ -300,23 +300,26 @@ struct WindowDragging: ViewModifier {
 
 struct NanoShadowView: View {
     @ObservedObject var settings: AppSettings
-    @Environment(\.colorScheme) private var systemColorScheme
 
-    private var theme: NanoTheme {
-        NanoTheme.resolve(mode: settings.colorMode, systemIsDark: systemColorScheme == .dark)
+    var body: some View {
+        NanoShadowShape(shell: settings.shellStyle)
     }
+}
+
+struct NanoShadowShape: View {
+    let shell: ShellStyle
 
     var body: some View {
         Canvas { context, _ in
             let bodyRect = CGRect(
                 x: NanoMetrics.shadowMargin,
-                y: NanoMetrics.shadowMargin + settings.shellStyle.topInset,
-                width: settings.shellStyle.bodySize.width,
-                height: settings.shellStyle.bodySize.height
+                y: NanoMetrics.shadowMargin + shell.topInset,
+                width: shell.bodySize.width,
+                height: shell.bodySize.height
             )
             let bodyPath = Path(
                 roundedRect: bodyRect,
-                cornerRadius: settings.shellStyle.cornerRadius
+                cornerRadius: shell.cornerRadius
             )
 
             drawShadow(
@@ -341,7 +344,7 @@ struct NanoShadowView: View {
                 y: 1
             )
         }
-        .frame(width: settings.shellStyle.shadowSize.width, height: settings.shellStyle.shadowSize.height)
+        .frame(width: shell.shadowSize.width, height: shell.shadowSize.height)
         .allowsHitTesting(false)
     }
 
@@ -361,7 +364,7 @@ struct NanoShadowView: View {
                 options: [.shadowOnly]
             )
         )
-        shadowContext.fill(path, with: .color(theme.body))
+        shadowContext.fill(path, with: .color(.black))
     }
 }
 
@@ -374,7 +377,9 @@ enum NanoMetrics {
     static let screenSideInset: CGFloat = 14
     static let wheelSideInset: CGFloat = 22
 
-    static let shadowMargin: CGFloat = 100
+    // Allow the widest blur (48 pt) to fade over three radii, plus its
+    // 28 pt downward offset. The old 100 pt margin cut off its lower tail.
+    static let shadowMargin: CGFloat = 172
     static var windowWidth: CGFloat { bodyWidth + shadowMargin * 2 }
     static var windowHeight: CGFloat { bodyHeight + shadowMargin * 2 }
 }
